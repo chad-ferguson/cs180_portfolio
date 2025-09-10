@@ -2,15 +2,357 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Project 1</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Project 1 — Prokudin-Gorskii Colorization</title>
+  <link rel="stylesheet" href="project.css" />
+  <meta name="description" content="CS180 Project 1: Colorizing the Prokudin-Gorskii Photo collection" />
 </head>
-<body>
-  <h1>Project 1 - Prokudin-Gorskii’s Color Photography</h1>
-  <p>Not yet implemented</p>
-  <a href="../../index.html">← Back to Home</a>
+<boy>
+  <header class="site-header container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">← Back to Portfolio</a>
+    </nav>
 
-  <script src="script.js"></script>
+    <h1>Project 1: Colorizing the Prokudin-Gorskii Photo Collection</h1>
+    <div class="rule"></div>
+
+    <!-- Quick links -->
+    <div class="quick-links" role="navigation" aria-label="Jump to section">
+      <a class="btn" href="#overview">Overview</a>
+      <a class="btn" href="#lowres">Low-Res Results</a>
+      <a class="btn" href="#highres">High-Res Results</a>
+      <a class="btn" href="#chosen">Chosen Examples</a>
+      <a class="btn" href="#troubleshoot">Troubleshooting</a>
+    </div>
+  </header>
+
+  <main class="container article">
+    <!-- Approach -->
+    <section id="overview" class="section">
+      <h2>Overview</h2>
+      <p>
+        The goal of this project is to split Prokudin-Gorskii's glass plates into B/G/R channels, align the channels with x and y shifts, and stack them into a colored image.
+      </p>
+      <p>
+        <strong>Single-Scale (.jpg):</strong> For low-res images, I did a small windowed search over
+        integer shifts and picked the alignment that best matches the interior of the image. This is applied to the three .jpg files in the given data.
+      </p>
+
+      <p>
+        <strong>Multi-Scale Pyramid (.tif):</strong> For the larger, high-res scans, I used the coarse-to-fine pyramid speed-up. This starts at a downsampled version to get a rough shift, then carries that estimate up the pyramid and refines it with tiny local searches, recursively calling the single-scale approach. For the final code (used for the images below), I used gradients instead of raw pixels to deal with misalignment that is discussed at the bottom of this page. This is applied for all of the various .tif files in the given data and chosen from the archive.
+      </p>
+    </section>
+
+    <!-- Low-res results -->
+    <section id="lowres" class="section">
+      <h2>Low-Res Results (Single-Scale)</h2>
+      <div class="gallery">
+        
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/low_res/colorized_cathedral.jpg" alt="cathedral.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">cathedral.jpg</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=+2</code>, <code>y=+5</code></li>
+              <li>R → B: <code>x=+3</code>, <code>y=+12</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/low_res/colorized_monastery.jpg" alt="monastery.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">monastery.jpg</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=+2</code>, <code>y=-3</code></li>
+              <li>R → B: <code>x=+2</code>, <code>y=+3</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/low_res/colorized_tobolsk.jpg" alt="tobolsk.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">tobolsk.jpg</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=+3</code>, <code>y=+3</code></li>
+              <li>R → B: <code>x=+3</code>, <code>y=+6</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Example results -->
+    <section id="highres" class="section">
+      <h2>High-Res Results (Pyramid)</h2>
+      <div class="gallery">
+        
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/high_res_ex/colorized_church.jpg" alt="church.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">church.tif</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=+4</code>, <code>y=+25</code></li>
+              <li>R → B: <code>x=-4</code>, <code>y=+58</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/high_res_ex/colorized_emir_after.jpg" alt="emir.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">emir.tif</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=+24</code>, <code>y=+49</code></li>
+              <li>R → B: <code>x=+40</code>, <code>y=+107</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/high_res_ex/colorized_harvesters.jpg" alt="harvesters.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">harvesters.tif</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=+18</code>, <code>y=+60</code></li>
+              <li>R → B: <code>x=+14</code>, <code>y=+123</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/high_res_ex/colorized_icon.jpg" alt="icon.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">icon.tif</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=+17</code>, <code>y=+41</code></li>
+              <li>R → B: <code>x=+23</code>, <code>y=+90</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/high_res_ex/colorized_italil.jpg" alt="italil.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">italil.tif</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=+22</code>, <code>y=+38</code></li>
+              <li>R → B: <code>x=+36</code>, <code>y=+77</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/high_res_ex/colorized_lastochikino.jpg" alt="lastochikino.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">lastochikino.tif</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=-2</code>, <code>y=-3</code></li>
+              <li>R → B: <code>x=-8</code>, <code>y=+75</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/high_res_ex/colorized_lugano.jpg" alt="lugano.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">lugano.tif</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=-16</code>, <code>y=+41</code></li>
+              <li>R → B: <code>x=-29</code>, <code>y=+93</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/high_res_ex/colorized_melons.jpg" alt="melons.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">melons.tif</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=+11</code>, <code>y=+81</code></li>
+              <li>R → B: <code>x=+14</code>, <code>y=+117</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/high_res_ex/colorized_self_portrait.jpg" alt="self_portrait.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">self_portrait.tif</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=+29</code>, <code>y=+78</code></li>
+              <li>R → B: <code>x=+37</code>, <code>y=+175</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/high_res_ex/colorized_siren.jpg" alt="siren.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">siren.tif</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=-5</code>, <code>y=+49</code></li>
+              <li>R → B: <code>x=-24</code>, <code>y=+96</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/high_res_ex/colorized_three_generations.jpg" alt="three_generations.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">three_generations.tif</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=+13</code>, <code>y=+53</code></li>
+              <li>R → B: <code>x=+10</code>, <code>y=+111</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Chosen examples -->
+    <section id="chosen" class="section">
+      <h2>Chosen Examples</h2>
+      <div class="gallery">
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/high_res_chosen/colorized_textile_mill.jpg" alt="textile_mill.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">textile_mill.tif</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=+27</code>, <code>y=+72</code></li>
+              <li>R → B: <code>x=+34</code>, <code>y=+135</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/high_res_chosen/colorized_railroad_construction.jpg" alt="railroad_construction.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">railroad_construction.tif</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=-14</code>, <code>y=+34</code></li>
+              <li>R → B: <code>x=-26</code>, <code>y=+121</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/high_res_chosen/colorized_mozhaiskii_nikolaevskii.jpg" alt="mozhaiskii_nikolaevskii.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">mozhaiskii_nikolaevskii.tif</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=+15</code>, <code>y=+41</code></li>
+              <li>R → B: <code>x=+25</code>, <code>y=+91</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/high_res_chosen/colorized_lizhma_river.jpg" alt="lizhma_river.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">lizhma_river.tif</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=-1</code>, <code>y=+37</code></li>
+              <li>R → B: <code>x=0</code>, <code>y=+127</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/high_res_chosen/colorized_wood_carving.jpg" alt="wood_carving.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">wood_carving.tif</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=-1</code>, <code>y=+53</code></li>
+              <li>R → B: <code>x=-12</code>, <code>y=+125</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/high_res_chosen/colorized_religious_painting.jpg" alt="religious_painting.jpg" loading="lazy">
+          </div>
+          <figcaption>
+            <div class="title">religious_painting.tif</div>
+            <ul class="offsets">
+              <li>G → B: <code>x=+4</code>, <code>y=+29</code></li>
+              <li>R → B: <code>x=+7</code>, <code>y=+69</code></li>
+            </ul>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Troubleshooting -->
+    <section id="troubleshoot" class="section">
+      <h2>Troubleshooting</h2>
+      <p class="lede">
+        While all of the other .tif images worked fairly well with the pyramid approach on raw pixels as features, I had trouble trying to get emir.tif aligned. As mentioned in the spec, the brightness difference between channels might be causing the problems. I decided to swap to gradient magnitude instead of raw pixels, which fixed this misalignment. The image before and after the feature update are shown below.
+      </p>
+
+      <figure class="figure compare">
+        <div class="pane">
+          <div class="media-frame">
+            <img src="media/high_res_ex/colorized_emir_before.png"
+                alt="emir.tif — before (misaligned)" loading="lazy">
+          </div>
+        </div>
+
+        <div class="arrow" aria-hidden="true">→</div>
+
+        <div class="pane">
+          <div class="media-frame">
+            <img src="media/high_res_ex/colorized_emir_after.jpg"
+                alt="emir.tif — after (gradient-based matching)" loading="lazy">
+          </div>
+        </div>
+
+      </figure>
+
+      <p class="lede">
+        I think this technically counts as bells and whistles, and it did give slightly better results for the other images, but I genuinely just wanted to get all of the alignments working for the files in the examples folder. I guess this is both troubleshooting and bells and whistles.
+      </p>
+    </section>
+  </main>
 </body>
 </html>
