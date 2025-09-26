@@ -32,7 +32,7 @@
     <!-- 1_1 -->
     <section id="p11" class="section">
       <h2>Part 1.1 — Convolutions from Scratch</h2>
-      <p class="lede"> In this question, we implemented convolution with 4 loops, 2 loops, and then compared the results with <code>scipy.signal.convolve2d</code>. The code snippets for these are below. Each implementation's result image was essentially the exact same, looking like the 3 images displayed below. The main difference was the runtime, showing the importance of numpy vectorization as well as scipy's further parallelism and special tricks. For the 9x9 box filter, SciPy finished in <b>0.028 s</b>, compared to <b>4.078 s</b> for the four-loop version and <b>0.671 s</b> for the two-loop version. For the Dx filter, SciPy ran in <b>0.003 s</b>, while the four-loop and two-loop implementations took <b>0.197 s</b> and <b>0.568 s</b>, respectively. Similarly for the Dy filter, 
+      <p class="lede"> In this question, we implemented convolution with 4 loops, 2 loops, and then compared the results with <code>scipy.signal.convolve2d</code>. The code snippets for these are below. Each implementation's result image was essentially the exact same, looking like the three images displayed below. The main difference was the runtime, showing the importance of numpy vectorization as well as scipy's further parallelism and special tricks. For the 9x9 box filter, SciPy finished in <b>0.028 s</b>, compared to <b>4.078 s</b> for the four-loop version and <b>0.671 s</b> for the two-loop version. For the Dx filter, SciPy ran in <b>0.003 s</b>, while the four-loop and two-loop implementations took <b>0.197 s</b> and <b>0.568 s</b>, respectively. Similarly for the Dy filter, 
       SciPy took <b>0.003 s</b>, versus <b>0.217 s</b> (four-loop) and <b>0.569 s</b> (two-loop).
       </p>
 
@@ -92,14 +92,14 @@
       <p class="lede"> In this question, we implement an unsharp mask filter to sharpen images. The unsharp mask filter uses the fact that high frequencies can be extracted from the image by subtracting the low frequencies from the original image. Then the image is sharpened by adding more high frequencies back to the image. This entire process is implemented as one convolution operation. For this question specifically, I used a 7x7 Gaussian and a sharpening amount of 0.9. A higher sharpening amount means more high frequencies are added, making the image even unnaturally sharp, while a lower sharpening amount gives a less sharp result. Below are the results of applying this to the Taj Mahal and the golden gate bridge.
       </p>
 
-      <h3>Taj</h3>
+      <h3>Taj Mahal</h3>
       <div class="gallery">
         <figure class="card"><div class="media-frame"><img src="media/2_1/taj_blur.png"  alt="Taj — blurred"></div><figcaption class="muted">Blurred</figcaption></figure>
         <figure class="card"><div class="media-frame"><img src="media/2_1/taj_high_freq.png"     alt="Taj — high frequencies"></div><figcaption class="muted">High frequency</figcaption></figure>
         <figure class="card"><div class="media-frame"><img src="media/2_1/taj_sharpened.png" alt="Taj — sharpened"></div><figcaption class="muted">Sharpened (amt=0.9)</figcaption></figure>
       </div>
 
-      <h3>Golden Gate</h3>
+      <h3>Golden Gate Bridge</h3>
       <div class="gallery">
         <figure class="card"><div class="media-frame"><img src="media/2_1/golden_gate_blur.png"  alt="Golden Gate — blurred"></div><figcaption class="muted">Blurred</figcaption></figure>
         <figure class="card"><div class="media-frame"><img src="media/2_1/golden_gate_high_freq.png"     alt="Golden Gate — high frequencies"></div><figcaption class="muted">High frequency</figcaption></figure>
@@ -110,7 +110,7 @@
     <!-- 2_2 -->
     <section id="p22" class="section">
       <h2>Part 2.2 — Hybrid Images</h2>
-      <p class="lede">In this question, we combine the high frequencies of one image and the low frequencies of another image to create a hybrid image that looks different from up close or far away. We also align the image (such as by the eyes) to make the effect better. The picture of Derek and Nutmeg are below. I then gave it two other tries, one with a selfie of me and an owl image, and the other a picture of my brother posing in a similar manner to the famous Van Gogh painting. My personal favorite is Van Gogh Bro, so below the full frequency analysis and intermediate stages are shown for that hybrid image.</p>
+      <p class="lede">In this question, we combine the high frequencies of one image and the low frequencies of another image to create a hybrid image that looks different from up close or far away. We also align the image (such as by the eyes) to make the effect better. The picture of Derek and Nutmeg are below. I then gave it two other tries, one with a selfie of me and an owl image, and the other a picture of my brother posing in a similar manner to the famous Van Gogh painting. My personal favorite is Van Bro, so below the full frequency analysis and intermediate stages are shown for that hybrid image.</p>
 
       <!-- cat_man -->
       <h3>Cat man</h3>
@@ -127,7 +127,7 @@
           </div>
         </figure>
       <!-- van_gogh_bro -->
-      <h3>Van Gogh Bro</h3>
+      <h3>Van Bro</h3>
       <figure class="card mega">
         <div class="media-frame">
           <img src="media/2_2/van_gogh_bro/report.png" alt="van_gogh_bro FFT/process grid (4x3)">
@@ -151,7 +151,7 @@
     <!-- 2_4 -->
     <section id="p24" class="section">
       <h2>Part 2.4 — Multiresolution Blending</h2>
-      <p class="lede"> After learning how the oraple was created, this question asks us to create our own blended images using a similar process, with one of the choices having a nonlinear mask. Below, the three blended images I created are displayed as well as a similar figure from the book of a few levels of the stacks. The first custom blend is of a golden retriever and a black lab, using a vertical mask. The next custom blend is of an image of Utah's landscape from a few years ago. During the fall, I took the first picture, and then driving past the location in the winter, I tried my best to take a picture in the exact same location. I was excited to be able to use images that I took a pretty long time ago, as I had no idea at the time of taking then that I was going to use them for this project. The third blend is nonlinear, using a circular mask instead to replace a cars wheel with a clock.
+      <p class="lede"> After learning how the oraple was created, this question asks us to create our own blended images using a similar process, with one of the choices having a nonlinear mask. Below, the three blended images I created are displayed as well as a similar figure from the book of a few levels of the stacks. The first custom blend is of a golden retriever and a black lab, using a vertical mask. The next custom blend is of an image of Utah's landscape from a few years ago. During the fall, I took the first picture, and then driving past the location in the winter, I tried my best to take a picture in the exact same location. I was excited to be able to use images that I took a pretty long time ago, as I had no idea at the time of taking then that I was going to use them for this project. The third blend is nonlinear, using a circular mask to replace a cars wheel with a clock.
       </p>
 
       <!-- Dogs -->
