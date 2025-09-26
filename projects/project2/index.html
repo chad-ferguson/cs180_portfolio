@@ -2,15 +2,208 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Project 2</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Project 2 — Fun with Filters & Frequencies</title>
+  <link rel="stylesheet" href="project.css" />
+  <meta name="description" content="CS180 Project 2" />
 </head>
 <body>
-  <h1>Project 2 - Fun With Frequencies</h1>
-  <p>Not yet implemented</p>
-  <a href="../../index.html">← Back to Home</a>
+  <header class="site-header container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">← Back to Portfolio</a>
+    </nav>
 
-  <script src="script.js"></script>
+    <h1>Project 2: Fun with Filters & Frequencies</h1>
+    <div class="rule"></div>
+
+    <div class="quick-links" role="navigation" aria-label="Jump to section">
+      <a class="btn" href="#p11">1.1 Convolution</a>
+      <a class="btn" href="#p12">1.2 Finite Diff</a>
+      <a class="btn" href="#p13">1.3 DoG</a>
+      <a class="btn" href="#p21">2.1 Sharpening</a>
+      <a class="btn" href="#p22">2.2 Hybrids</a>
+      <a class="btn" href="#p23">2.3 Stacks</a>
+      <a class="btn" href="#p24">2.4 Blending</a>
+    </div>
+  </header>
+
+  <main class="container article">
+
+    <!-- 1_1 -->
+    <section id="p11" class="section">
+      <h2>Part 1.1 — Convolutions from Scratch</h2>
+      <p class="lede"> In this question, we implemented convolution with 4 loops, 2 loops, and then compared the results with <code>scipy.signal.convolve2d</code>. The code snippets for these are below. Each implementation's result image was essentially the exact same, looking like the 3 images displayed below. The main difference was the runtime, showing the importance of numpy vectorization as well as scipy's further parallelism and special tricks. For the 9x9 box filter, SciPy finished in <b>0.028 s</b>, compared to <b>4.078 s</b> for the four-loop version and <b>0.671 s</b> for the two-loop version. For the Dx filter, SciPy ran in <b>0.003 s</b>, while the four-loop and two-loop implementations took <b>0.197 s</b> and <b>0.568 s</b>, respectively. Similarly for the Dy filter, 
+      SciPy took <b>0.003 s</b>, versus <b>0.217 s</b> (four-loop) and <b>0.569 s</b> (two-loop).
+      </p>
+
+      <h3>Code Snippets</h3>
+      <div class="gallery">
+        <figure class="card"><div class="media-frame"><img src="media/1_1/code4loops.png" alt="Four-loop convolution code"></div></figure>
+        <figure class="card"><div class="media-frame"><img src="media/1_1/code2loops.png"  alt="Two-loop convolution code"></div></figure>
+      </div>
+
+      <h3>Results</h3>
+      <div class="gallery">
+        <figure class="card"><div class="media-frame"><img src="media/1_1/scipy_box.png" alt="scipy convolve2d box"></div></figure>
+        <figure class="card"><div class="media-frame"><img src="media/1_1/scipy_dx.png"  alt="scipy convolve2d Dx"></div></figure>
+        <figure class="card"><div class="media-frame"><img src="media/1_1/scipy_dy.png"  alt="scipy convolve2d Dy"></div></figure>
+      </div>
+
+    </section>
+
+    <!-- 1_2 -->
+    <section id="p12" class="section">
+      <h2>Part 1.2 — Finite Difference Operator</h2>
+      <p class="lede">This question involves convolving the cameraman image with the finite difference operators (after padding). After getting the partial derivatives of x and y, we we form the gradient magnitude image, and finally binarize the image to filter to only strong edges. I messed around with the threshold and found that 0.94 worked best at keeping the strong edges while also showing as little clutter as possible. The results are shown below. In the final image, it is worth noting some noise, especially in the grass/ground.</p>
+
+      <div class="figure duo">
+        <figure class="card"><div class="media-frame"><img src="media/1_2/cameraman_dx.png"       alt="cameraman partial x"></div><figcaption class="muted">Partial x Image</figcaption></figure>
+        <figure class="card"><div class="media-frame"><img src="media/1_2/cameraman_dy.png"       alt="cameraman partial y"></div><figcaption class="muted">Partial y Image</figcaption></figure>
+      </div>
+
+      <div class="figure duo">
+        <figure class="card"><div class="media-frame"><img src="media/1_2/cameraman_grad_mag.png" alt="cameraman gradient magnitude"></div><figcaption class="muted">Gradient Magnitude Image</figcaption></figure>
+        <figure class="card"><div class="media-frame"><img src="media/1_2/binarized_edges.png"    alt="cameraman binarized edges"></div><figcaption class="muted">Binarized Edges</figcaption></figure>
+      </div>
+    </section>
+
+    <!-- 1_3 -->
+    <section id="p13" class="section">
+      <h2>Part 1.3 — Derivative of Gaussian (DoG)</h2>
+      <p class="lede"> This question is sort of a continuation of the previous question. By applying a gaussian first and then following the same process as the last question, we can limit the amount of noise in the edges. This can be convolved into a single operation (DoG) by combining a gaussian and the finite difference operator from before. These filters are displayed below. With this, the resulting binarized edges below has considerably less noise than part 1.2, using the same threshold value of 0.94.
+      </p>
+
+      <h3>Filter Visualizations</h3>
+      <div class="gallery">
+        <figure class="card"><div class="media-frame"><img src="media/1_3/gaussian.png"      alt="gaussian"></div><figcaption class="muted">Gaussian Kernel</figcaption></figure>
+        <figure class="card"><div class="media-frame"><img src="media/1_3/DoGx_image.png" alt="DoGx result"></div><figcaption class="muted">DoG x Kernel</figcaption></figure>
+        <figure class="card"><div class="media-frame"><img src="media/1_3/DoGy_image.png" alt="DoGy result"></div><figcaption class="muted">DoG y Kernel</figcaption></figure>
+      </div>
+
+      <h3>Image Output</h3>
+      <div class="gallery">
+        <figure class="card output-small"><div class="media-frame"><img src="media/1_3/binarized_edges_DoG.png" alt="Edges from DoG"></div>
+      </div>
+    </section>
+
+    <!-- 2_1 -->
+    <section id="p21" class="section">
+      <h2>Part 2.1 — Image “Sharpening” (Unsharp Mask)</h2>
+      <p class="lede"> In this question, we implement an unsharp mask filter to sharpen images. The unsharp mask filter uses the fact that high frequencies can be extracted from the image by subtracting the low frequencies from the original image. Then the image is sharpened by adding more high frequencies back to the image. This entire process is implemented as one convolution operation. For this question specifically, I used a 7x7 Gaussian and a sharpening amount of 0.9. A higher sharpening amount means more high frequencies are added, making the image even unnaturally sharp, while a lower sharpening amount gives a less sharp result. Below are the results of applying this to the Taj Mahal and the golden gate bridge.
+      </p>
+
+      <h3>Taj</h3>
+      <div class="gallery">
+        <figure class="card"><div class="media-frame"><img src="media/2_1/taj_blur.png"  alt="Taj — blurred"></div><figcaption class="muted">Blurred</figcaption></figure>
+        <figure class="card"><div class="media-frame"><img src="media/2_1/taj_high_freq.png"     alt="Taj — high frequencies"></div><figcaption class="muted">High frequency</figcaption></figure>
+        <figure class="card"><div class="media-frame"><img src="media/2_1/taj_sharpened.png" alt="Taj — sharpened"></div><figcaption class="muted">Sharpened (amt=0.9)</figcaption></figure>
+      </div>
+
+      <h3>Golden Gate</h3>
+      <div class="gallery">
+        <figure class="card"><div class="media-frame"><img src="media/2_1/golden_gate_blur.png"  alt="Golden Gate — blurred"></div><figcaption class="muted">Blurred</figcaption></figure>
+        <figure class="card"><div class="media-frame"><img src="media/2_1/golden_gate_high_freq.png"     alt="Golden Gate — high frequencies"></div><figcaption class="muted">High frequency</figcaption></figure>
+        <figure class="card"><div class="media-frame"><img src="media/2_1/golden_gate_sharpened.png" alt="Golden Gate — sharpened"></div><figcaption class="muted">Sharpened (amt=0.9)</figcaption></figure>
+      </div>
+    </section>
+
+    <!-- 2_2 -->
+    <section id="p22" class="section">
+      <h2>Part 2.2 — Hybrid Images</h2>
+      <p class="lede">In this question, we combine the high frequencies of one image and the low frequencies of another image to create a hybrid image that looks different from up close or far away. We also align the image (such as by the eyes) to make the effect better. The picture of Derek and Nutmeg are below. I then gave it two other tries, one with a selfie of me and an owl image, and the other a picture of my brother posing in a similar manner to the famous Van Gogh painting. My personal favorite is Van Gogh Bro, so below the full frequency analysis and intermediate stages are shown for that hybrid image.</p>
+
+      <!-- cat_man -->
+      <h3>Cat man</h3>
+        <figure class="card report-wide">
+          <div class="media-frame">
+            <img src="media/2_2/cat_man/report.png" alt="cat_man pipeline (3 across)">
+          </div>
+        </figure>
+      <!-- owl_selfie -->
+      <h3>Owl Selfie</h3>
+        <figure class="card report-wide">
+          <div class="media-frame">
+            <img src="media/2_2/owl_selfie/report.png" alt="owl_selfie pipeline (3 across)">
+          </div>
+        </figure>
+      <!-- van_gogh_bro -->
+      <h3>Van Gogh Bro</h3>
+      <figure class="card mega">
+        <div class="media-frame">
+          <img src="media/2_2/van_gogh_bro/report.png" alt="van_gogh_bro FFT/process grid (4x3)">
+        </div>
+      </figure>
+    </section>
+
+    <!-- 2_3 -->
+    <section id="p23" class="section">
+      <h2>Part 2.3 — Gaussian & Laplacian Stacks</h2>
+      <p class="lede">In this question, we began working on creating blended images using gaussian and laplacian stacks. The oraple (bottom right result) is created by blending each level of each image's stack with a blurred mask with a vertical seam and then summing the Laplacian stack. The figure below is a recreation of the textbook's image, displaying a few of the levels of the stack and then the combination.
+      </p>
+
+      <figure class="card mega">
+        <div class="media-frame">
+          <img src="media/2_3/figure.png" alt="Recreated textbook figure (large)">
+        </div>
+      </figure>
+    </section>
+
+    <!-- 2_4 -->
+    <section id="p24" class="section">
+      <h2>Part 2.4 — Multiresolution Blending</h2>
+      <p class="lede"> After learning how the oraple was created, this question asks us to create our own blended images using a similar process, with one of the choices having a nonlinear mask. Below, the three blended images I created are displayed as well as a similar figure from the book of a few levels of the stacks. The first custom blend is of a golden retriever and a black lab, using a vertical mask. The next custom blend is of an image of Utah's landscape from a few years ago. During the fall, I took the first picture, and then driving past the location in the winter, I tried my best to take a picture in the exact same location. I was excited to be able to use images that I took a pretty long time ago, as I had no idea at the time of taking then that I was going to use them for this project. The third blend is nonlinear, using a circular mask instead to replace a cars wheel with a clock.
+      </p>
+
+      <!-- Dogs -->
+      <h3>Dogs Vertical Seam</h3>
+      <div class="figure duo">
+        <figure class="card big">
+          <div class="media-frame">
+            <img src="media/2_4/dog_blend.png" alt="Dog blend result">
+          </div>
+        </figure>
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/2_4/dog_blend_figure.png" alt="Dog blend figure (inputs/mask/stacks)">
+          </div>
+        </figure>
+      </div>
+
+      <!-- Landscape -->
+      <h3>Landscape Vertical Seam</h3>
+      <div class="figure duo">
+        <figure class="card big">
+          <div class="media-frame">
+            <img src="media/2_4/landscape.png" alt="Landscape blend result">
+          </div>
+        </figure>
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/2_4/landscape_figure.png" alt="Landscape figure (inputs/mask/stacks)">
+          </div>
+        </figure>
+      </div>
+
+      <!-- Clock × Wheels (nonlinear) -->
+      <h3>Clock Wheels (Nonlinear mask)</h3>
+      <div class="figure duo">
+        <figure class="card big">
+          <div class="media-frame">
+            <img src="media/2_4/clock_wheels.png" alt="Clock Wheels blend result">
+          </div>
+        </figure>
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/2_4/clock_wheels_figure.png" alt="Clock Wheels figure (inputs/mask/stacks)">
+          </div>
+        </figure>
+      </div>
+    </section>
+
+    <section id="reflection" class="section">
+      <h2>Reflection</h2>
+      <p class="muted">My biggest takeaway from this project is that I have been taking photoshop/editing tools for granted. I have never really thought about all of the operations happening behind the scenes to make the application and editing work. It is pretty cool to learn about.</p>
+    </section>
+  </main>
 </body>
 </html>
