@@ -2,15 +2,193 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Project 3</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Project 3A — (Auto)-Stitching Photo Mosaics</title>
+  <link rel="stylesheet" href="project.css" />
+  <meta name="description" content="CS180 Project 3A" />
 </head>
 <body>
-  <h1>Project 3 - Panorama Stiching</h1>
-  <p>Not yet implemented</p>
-  <a href="../../index.html">← Back to Home</a>
+  <header class="site-header container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">← Back to Portfolio</a>
+    </nav>
 
-  <script src="script.js"></script>
+    <h1>Project 3A: (Auto)-Stitching Photo Mosaics</h1>
+    <div class="rule"></div>
+
+    <div class="quick-links" role="navigation" aria-label="Jump to section">
+      <a class="btn" href="#a1">A.1 Shoot</a>
+      <a class="btn" href="#a2">A.2 Homographies</a>
+      <a class="btn" href="#a3">A.3 Rectify</a>
+      <a class="btn" href="#a4">A.4 Mosaic</a>
+    </div>
+  </header>
+
+  <main class="container article">
+
+    <!-- A.1 -->
+    <section id="a1" class="section">
+      <h2>A.1 — Shoot the Pictures</h2>
+      <p class="lede">
+        Displayed below are 3 of the many image pairs I took for this project. Each pair has a fixed center of projection so that the transforms between them are projective, with some overlap in the middle to find correspondences.
+      </p>
+      
+      <h3>Park Bench</h3>
+      <div class="figure duo tight">
+        <figure class="card"><div class="media-frame"><img src="media/A_1/bench_left.png"  alt="bench_left"></div></figure>
+        <figure class="card"><div class="media-frame"><img src="media/A_1/bench_right.png" alt="bench_right"></div></figure>
+      </div>
+      
+      <h3>Trucks</h3>
+      <div class="figure duo tight">
+        <figure class="card"><div class="media-frame"><img src="media/A_1/trucks_left.png"  alt="trucks_left"></div></figure>
+        <figure class="card"><div class="media-frame"><img src="media/A_1/trucks_right.png" alt="trucks_right"></div></figure>
+      </div>
+
+      <h3>Street View</h3>
+      <div class="figure duo tight">
+        <figure class="card"><div class="media-frame"><img src="media/A_1/street_left.png"  alt="street_left"></div></figure>
+        <figure class="card"><div class="media-frame"><img src="media/A_1/street_right.png" alt="street_right"></div></figure>
+      </div>
+
+    </section>
+
+    <!-- A.2 -->
+    <section id="a2" class="section">
+      <h2>A.2 — Recover Homographies</h2>
+      <p class="lede">
+        To recover homographies, we first need correspondences between each image. 
+        For this part, I manually recorded the pixel coordinates in each image using 
+        <a href="https://pixspy.com" target="_blank" rel="noopener noreferrer">pixspy.com</a>. These points are overlayed on the image and displayed below.
+      </p>
+
+      <figure class="card mega">
+        <div class="media-frame">
+          <img src="media/A_2/benches.png" alt="Correspondences: benches">
+        </div>
+      </figure>
+
+      <figure class="card mega">
+        <div class="media-frame">
+          <img src="media/A_2/street.png" alt="Correspondences: street">
+        </div>
+      </figure>
+
+      <figure class="card mega">
+        <div class="media-frame">
+          <img src="media/A_2/trucks.png" alt="Correspondences: trucks">
+        </div>
+      </figure>
+
+      <h3>Computing H</h3>
+        <p class="muted">
+          To compute H, as seen in discussion #5, we can solve for the system of equations by taking a single point and solving for u and v in terms of x, y, and the elements of H. Each point gives us two equations, so we need at least 4 correspondence points. Below is the complete system of equations for 4 involved correspondences.
+        </p>
+        <figure class="equation card">
+          <a href="media/A_2/eqs.png" target="_blank" rel="noopener">
+            <div class="media-frame">
+              <img src="media/A_2/eqs.png" alt="">
+            </div>
+          </a>
+        </figure>
+        <p class="muted">
+          Note, that the h vector make up the components of the H matrix, with the bottom right always being 1, see below.
+        </p>
+        <figure class="equation small card">
+          <a href="media/A_2/H.png" target="_blank" rel="noopener">
+            <div class="media-frame">
+              <img src="media/A_2/H.png" alt="">
+            </div>
+          </a>
+        </figure>
+        <p class="muted">
+          Also note that this system of equations is overdetermined for any more than 4 points (A would be taller to fit more points in). In this case we need to use least squares to solve for the elements of H, finding the minimum error for h to satisfy Ah=b.
+        </p>
+        <p class="muted">
+          Below are the results on the bench image pair's correspondence points. A similar process is run for each set of images.
+        </p>
+        <figure class="equation card">
+          <a href="media/A_2/benches_eq.png" target="_blank" rel="noopener">
+            <div class="media-frame">
+              <img src="media/A_2/benches_eq.png" alt="">
+            </div>
+          </a>
+        </figure>
+      </div>
+    </section>
+
+    <!-- A.3 -->
+    <section id="a3" class="section">
+      <h2>A.3 — Warp the Images</h2>
+      <p class="lede">
+        In this part, we implement inverse warping with both nearest neighbor and bilinear interpolation. Using the homography matrix function from before, we can then rectify images by finding the projective transformation of the image corners to a true rectangle. This process is displayed below for two posters on my wall.
+      </p>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/A_3/poster1_rectified.png" alt="Rectification case 1">
+        </div>
+      </figure>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/A_3/poster2_rectified.png" alt="Rectification case 2">
+        </div>
+      </figure>
+
+      <h3>Comparison</h3>
+      <p class="muted">
+        Although both methods are very similar, we can see a difference if we zoom in. Below, are zoomed in images of the right border of poster 1 after rectification. We can see that the border for NN is more jagged or stepped, while the bilinear implementation is much smoother. There is a small speed tradeoff since the NN interpolation does run a bit faster than the bilinear interpolation.
+      </p>
+      <div class="figure duo tight zoom-pair">
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/A_3/nn_zoom.png" alt="">
+          </div>
+          <figcaption class="muted">Nearest-Neighbor Interpolated Edge</figcaption>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/A_3/bi_zoom.png" alt="">
+          </div>
+          <figcaption class="muted">Bilinear Interpolated Edge</figcaption>
+        </figure>
+      </div>
+      </div>
+    </section>
+
+    <!-- A.4 -->
+    <section id="a4" class="section">
+      <h2>A.4 — Blend the Images into a Mosaic</h2>
+      <p class="lede">
+        In this part, we use the homographies for the image pairs that we calculated earlier to blend the images into a mosaic, as seen below. To do this, I first compute the output image size necessary to fit both images in full. Then, the right image is simply translated to its spot on the new canvas. Then, the left image is inverse warped (like in the last part) onto the output canvas with bilinear interpolation, using the translation matrix and the homography calculated between the left and right images. The outputs has some seams, which are handled with blending described below the outputs.
+      </p>
+
+      <figure class="card mega">
+        <div class="media-frame">
+          <img src="media/A_4/bench_mosaic.png"  alt="Bench mosaic">
+        </div>
+      </figure>
+
+      <figure class="card mega">
+        <div class="media-frame">
+          <img src="media/A_4/street_mosaic.png" alt="Street mosaic">
+        </div>
+      </figure>
+
+      <figure class="card mega">
+        <div class="media-frame">
+          <img src="media/A_4/trucks_mosaic.png" alt="Trucks mosaic">
+        </div>
+      </figure>
+
+        <h3>Blending Details</h3>
+        <p class="muted">
+          After the images are in the correct place, there is typically a small seam between the overlap of the images, or imperfect sections off detail in the overlap (ghosting). To solve this, I decided to use the distance transform to have an alpha mask fall off linearly until it hits the edge's black pixel. I then used the function from my project 2 code to build laplacian stacks for the images and a guassian stack for the mask to apply a 2 level pyramid blend to the output. We can then blend at both levels of the pyramid and sum the levels to get the output image, a blending process that is fairly similar to the project 2's multiresolution blending section!
+        </p>
+    </section>
+
+  </main>
 </body>
 </html>
