@@ -57,9 +57,17 @@ body{margin:0;
     border-radius:2px
 }
 .quick-links{
-    display:inline-flex;
-    gap:10px;
-    flex-wrap:wrap
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:14px;
+}
+
+.quick-links .link-row{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:10px;
 }
 .btn{
     display:inline-flex;
@@ -231,3 +239,14 @@ figure.equation figcaption {
 .equation.small .media-frame { max-width: 480px; }
 .equation.medium .media-frame { max-width: 580px; }
 .zoom-pair .media-frame img { max-height: 280px; object-fit: contain; }
+
+#b2 .figure.duo.tight { gap: 18px; }
+#b2 .figure.duo.tight .media-frame img{
+  max-height: 420px;
+}
+#b2 .media-frame{
+  padding: 10px;
+}
+#b2 .figure.duo{
+  grid-template-columns: 1fr 1fr;
+}

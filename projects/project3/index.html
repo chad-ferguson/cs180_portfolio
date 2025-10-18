@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Project 3A — (Auto)-Stitching Photo Mosaics</title>
+  <title>Project 3 — (Auto)-Stitching Photo Mosaics</title>
   <link rel="stylesheet" href="project.css" />
   <meta name="description" content="CS180 Project 3A" />
 </head>
@@ -13,14 +13,23 @@
       <a href="../../index.html">← Back to Portfolio</a>
     </nav>
 
-    <h1>Project 3A: (Auto)-Stitching Photo Mosaics</h1>
+    <h1>Project 3: (Auto)-Stitching Photo Mosaics</h1>
     <div class="rule"></div>
 
     <div class="quick-links" role="navigation" aria-label="Jump to section">
-      <a class="btn" href="#a1">A.1 Shoot</a>
-      <a class="btn" href="#a2">A.2 Homographies</a>
-      <a class="btn" href="#a3">A.3 Rectify</a>
-      <a class="btn" href="#a4">A.4 Mosaic</a>
+      <div class="link-row">
+        <a class="btn" href="#a1">A.1 Shoot</a>
+        <a class="btn" href="#a2">A.2 Homographies</a>
+        <a class="btn" href="#a3">A.3 Rectify</a>
+        <a class="btn" href="#a4">A.4 Mosaic</a>
+      </div>
+
+      <div class="link-row">
+        <a class="btn" href="#b1">B.1 Corner Detection</a>
+        <a class="btn" href="#b2">B.2 Feature Extraction</a>
+        <a class="btn" href="#b3">B.3 Feature Matching</a>
+        <a class="btn" href="#b4">B.4 RANSAC</a>
+      </div>
     </div>
   </header>
 
@@ -187,6 +196,98 @@
         <p class="muted">
           After the images are in the correct place, there is typically a small seam between the overlap of the images, or imperfect sections off detail in the overlap (ghosting). To solve this, I decided to use the distance transform to have an alpha mask fall off linearly until it hits the edge's black pixel. I then used the function from my project 2 code to build laplacian stacks for the images and a guassian stack for the mask to apply a 2 level pyramid blend to the output. We can then blend at both levels of the pyramid and sum the levels to get the output image, a blending process that is fairly similar to the project 2's multiresolution blending section!
         </p>
+    </section>
+
+    <!-- B.1 -->
+    <section id="b1" class="section">
+      <h2>B.1 — Harris Corner Detection</h2>
+      <p class="lede">
+        In this part, we detect Harris corners in the images, and then use Adaptive Non-Maximal Suppression (ANMS) to filter to the best local corners in each area of the image. Below is all of the Harris Corners and then the ANMS corners for both the left and right bench image which we previously manually created a mosaic of. The image is full of Harris corners, with only areas that are a patch of the same color (like the man's white shirt) not being detected.
+      </p>
+
+      <figure class="card mega">
+        <div class="media-frame">
+          <img src="media/B_1/bench_harris_all.png" alt="All Harris Corners">
+        </div>
+      </figure>
+
+      <figure class="card mega">
+        <div class="media-frame">
+          <img src="media/B_1/bench_harris_anms.png" alt="ANMS Corners">
+        </div>
+      </figure>
+    </section>
+
+    <!-- B.2 -->
+    <section id="b2" class="section">
+      <h2>B.2 — Feature Descriptor Extraction</h2>
+      <p class="lede">
+        In this part, we first blur and grayscale the image and then extract the 40x40 pixel window that surrounds each ANMS corner. The goal here is to be able to uniquely identify each detected corner to later match the descriptors between the two images. The outputs below for the left and right images show that some of the descriptors are not unique and cannot be used reliably. For example, the gradient looking descriptor for corners in the sky is basically identical for many of the detected corners and would cause trouble if we decided to calculate the homography on these corners. On the other hand, feature descriptors like points #4 in each image are great corners to compute the homography on.
+      </p>
+
+      <div class="figure duo tight">
+        <figure class="card">
+          <div class="media-frame"><img src="media/B_2/left_patch_points.png" alt="Left patch points"></div>
+          <figcaption class="muted">Left Image Corners</figcaption>
+        </figure>
+        <figure class="card">
+          <div class="media-frame"><img src="media/B_2/left_patches.png" alt="Left patches"></div>
+          <figcaption class="muted">Left Image Corresponding Patches</figcaption>
+        </figure>
+      </div>
+
+      <div class="figure duo tight">
+        <figure class="card">
+          <div class="media-frame"><img src="media/B_2/right_patch_points.png" alt="Right patch points"></div>
+          <figcaption class="muted">Right Image Corners</figcaption>
+        </figure>
+        <figure class="card">
+          <div class="media-frame"><img src="media/B_2/right_patches.png" alt="Right patches"></div>
+          <figcaption class="muted">Right Image Corresponding Patches</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- B.3 -->
+    <section id="b3" class="section">
+      <h2>B.3 — Feature Matching</h2>
+      <p class="lede">
+        In this part, we take the detected corners and match their feature descriptors between the two images to calculate correspondences. To find good matches, we cannot simply take descriptors that look the same though. Remember that two descriptors in the sky may be identical but actually be on opposite sides of the scene. A good match should be distinct. We calculate the best match and then the second best match for a point, and only accept the best match if the ratio between the top two matches meets a certain threshold. I defined my threshold as 0.67, but anything in this range should realistically work well. I displayed the results for the top 25 matches below. The results are still not perfect, but most of the points are correctly matched.
+      </p>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/B_3/bench_matches_top.png" alt="Matched features">
+        </div>
+      </figure>
+    </section>
+
+    <!-- B.4 -->
+    <section id="b4" class="section">
+      <h2>B.4 — RANSAC for Robust Homography</h2>
+      <p class="lede">
+        Finally, we use the detected and matched features to compute homographies and create mosaics without having to manually define correspondences like in part A. To do this we use an algorithm called Random Sample Consensus (RANSAC). This iterative algorithm continuously samples 4 random matched corner pairs, computes the homography, applies that homography to all the points, and then looks at the amount of inliers, or points that are satisfied by the calculated homography. The best 4 points should result in the highest amount of inliers. After iterating a bunch of times, we then finally compute the final homography by running least squares on all of the inliers. We can see that this does give slightly better results than in part A.4 in areas like the grass or asphalt. However, more importantly, it is automated! I also created two additional mosaics in this part that I had trouble with manually doing in part A.
+      </p>
+
+      <figure class="card mega">
+        <div class="media-frame"><img src="media/B_4/bench_auto_mosaic.png" alt="Bench Auto Mosaic"></div>
+      </figure>
+
+      <figure class="card mega">
+        <div class="media-frame"><img src="media/B_4/street_auto_mosaic.png" alt="Street Auto Mosaic"></div>
+      </figure>
+
+      <figure class="card mega">
+        <div class="media-frame"><img src="media/B_4/trucks_auto_mosaic.png" alt="Trucks Auto Mosaic"></div>
+      </figure>
+
+      <figure class="card mega">
+        <div class="media-frame"><img src="media/B_4/street2_auto_mosaic.png" alt="Street Auto Mosaic 2"></div>
+      </figure>
+
+      <figure class="card mega">
+        <div class="media-frame"><img src="media/B_4/street3_auto_mosaic.png" alt="Street Auto Mosaic 3"></div>
+      </figure>
     </section>
 
   </main>
