@@ -2,15 +2,183 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Project 4</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Project 4 - Neural Radiance Fields</title>
+  <link rel="stylesheet" href="project.css" />
+  <meta name="description" content="CS180 Project 4" />
 </head>
 <body>
-  <h1>Project 4 - Neural Radiance Fields</h1>
-  <p>Not yet implemented</p>
-  <a href="../../index.html">← Back to Home</a>
+  <header class="site-header container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">← Back to Portfolio</a>
+    </nav>
 
-  <script src="script.js"></script>
+    <h1>Project 4: Neural Radiance Fields</h1>
+    <div class="rule"></div>
+
+    <div class="quick-links" role="navigation" aria-label="Jump to section">
+      <div class="link-row">
+        <a class="btn" href="#p0">Part 0</a>
+        <a class="btn" href="#p1">Part 1</a>
+        <a class="btn" href="#p2">Part 2</a>
+        <a class="btn" href="#p26">Part 2.6</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container article">
+
+    <!-- part 0 -->
+    <section id="p0" class="section">
+      <h2>Part 0: Camera Calibration & 3D Scanning</h2>
+      <p class="lede">
+        In this part, we calibrated our phone cameras using Aruco tags to get the camera's intrinsics and distortion coefficients. We then take a bunch of pictures of an object with an Aruco tag in frame to estimate the camera poses. Below are two screenshots of my visualization from viser of the camera frustums of my custom dataset.
+      </p>
+
+      <div class="figure duo">
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/part0/screenshot1.png" alt="">
+          </div>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/part0/screenshot2.png" alt="">
+          </div>
+        </figure>
+      </div>
+    </section>
+
+    <!-- part 1 -->
+    <section id="p1" class="section">
+      <h2>Part 1: Fit a Neural Field to a 2D Image</h2>
+
+      <p class="lede">
+        In this part, we train a 2D neural field that positionally encodes pixel coordinates and maps them to color (RGB values). My model uses the MLP listed in the spec, a few nonlinear activations and fully connected layers of layer width 256, trained with the Adam optimizer with a learning rate of 1e-2. Training samples 10,000 random pixels per iteration for 1,500 iterations. Also for the positional encoding I used L=10.
+      </p>
+      <p class="lede">
+        The results below are on the fox image as well as an image of my girlfriend's cat. In the grid of different hyperparameters, we can see that low values of L and smaller layer width prevent the model from capturing the higher frequencies. A small layer width leads to a fuzzy look, and a lower L value gives a smoother image with less detail and higher frequency.
+      </p>
+
+      <h3>Fox Image</h3>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/part1/fox/progress.png" alt="">
+        </div>
+      </figure>
+
+      <div class="figure duo tight">
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/part1/fox/grid.png" alt="">
+          </div>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/part1/fox/psnr_curve.png" alt="">
+          </div>
+        </figure>
+      </div>
+
+      <h3>Cat Image</h3>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/part1/cat/progress.png" alt="">
+        </div>
+      </figure>
+
+      <div class="figure duo tight">
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/part1/cat/grid.png" alt="">
+          </div>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/part1/cat/psnr_curve.png" alt="">
+          </div>
+        </figure>
+      </div>
+
+    </section>
+
+    <!-- part 2 -->
+    <section id="p2" class="section">
+      <h2>Part 2: Fit a Neural Radiance Field from Multi-view Images</h2>
+
+      <p class="lede">
+        The subparts for part 2 walk through the steps of creating a full NeRF model. In part 2.1, we start by implementing functions for camera to world coordinate conversion, pixel to camera coordinate conversion, and pixel to ray conversion. One important thing in this part is to allow the functions to batch over pixels, but the formulas stay the same, just affecting dimensions. In part 2.2, functions for sampling are made to make the data class easier to implement in part 3. In my implementation, to sample rays from images, I flatten all the pixels from all the images, and then get N rays from all images, sampling one time. Another function for sampling points along the ray is made, prioritizing sampling points near where the object is at with near and far values. In part 2.3, the data class RaysData is put together, sampling pixels from the multi image views and returning the ray origin, ray direction, and true pixel values for training. The viser visualizations below show the rays from different cameras as well as sampled rays and points from one camera. 
+      </p>
+
+      <div class="figure duo">
+        <figure class="card"><div class="media-frame"><img src="media/part2/ray_ss.png" alt=""></div></figure>
+        <figure class="card"><div class="media-frame"><img src="media/part2/sample_ss.png" alt=""></div></figure>
+      </div>
+
+      <p class="lede">
+        Part 2.4 then defines the NeRF model we use that produces density and color for those samples in 3D. My implementation just uses the model defined in the spec and during lecture. Finally in part 2.5, we can use the functions and data loader class from the previous parts for volume rendering, following the equations from the lecture to get alpha and transmittance values to get the colors at all sample points. As for the hyperparameters for training, I used the suggested parameters with a batch size of 10,000 rays per iteration across 1,000 iterations with the Adam optimizer with a learning rate of 5e-4. These hyperparameters gave me the outputs below and a final PSNR of 22.8 after all the iterations finished. After training, the views from the test set are generated using the model, creating the gif below.
+      </p>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/part2/lego_progress.png" alt="">
+        </div>
+      </figure>
+
+      <div class="figure duo tight">
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/part2/lego_psnr.png" alt="">
+          </div>
+        </figure>
+
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/part2/lego_render_loop.gif" alt="">
+          </div>
+        </figure>
+      </div>
+
+    <!-- part 2.6 -->
+    <section id="p26" class="section">
+      <h2>Part 2.6: Custom NeRF</h2>
+      <p class="lede">
+        For part 2.6, the NeRF model is run on my own dataset from part 0. I spent a very long time trying to debug, retake the images, and tune hyperparameters, but finally just had to settle for the results below. I believe the reason the final gif looks like this is because of a mixture of an imperfect dataset as well as issues with the near and far values I used, but I am not entirely sure. You are able to make out the rubix cube, but the views from further away from the object get a bit distorted. For the output below, I used 10,000 iterations, with a batch size of 10,000, on the same model defined in part 2.4, using the Adam optimizer with a learning rate of 5e-4 again. I tried tweaking the near and far values a lot, but eventually settled for something close to what is given in the spec, using 0.08 and 0.5. After the 10,000 iterations, the PSNR value on the training set was 21.82.
+      </p>
+
+      <div class="figure trio">
+        <figure class="card"><div class="media-frame"><img src="media/part2_6/img1.png" alt=""></div></figure>
+        <figure class="card"><div class="media-frame"><img src="media/part2_6/img2.png" alt=""></div></figure>
+        <figure class="card"><div class="media-frame"><img src="media/part2_6/img3.png" alt=""></div></figure>
+      </div>
+
+      <h3>Metric Plots</h3>
+      <div class="figure duo">
+        <figure class="card"><div class="media-frame"><img src="media/part2_6/loss_curve.png" alt=""></div></figure>
+        <figure class="card"><div class="media-frame"><img src="media/part2_6/psnr_curve.png" alt=""></div></figure>
+      </div>
+
+      <h3>Training Progress</h3>
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/part2_6/progress.png" alt="">
+        </div>
+      </figure>
+
+      <h3>Final Rendering</h3>
+      <figure class="card">
+        <div class="media-frame">
+          <img src="media/part2_6/final.gif" alt="">
+        </div>
+      </figure>
+
+    </section>
+
+  </main>
 </body>
 </html>
