@@ -20,6 +20,9 @@
       <div class="link-row">
         <a class="btn" href="#p0">Part A.0</a>
         <a class="btn" href="#p11">Part A.1</a>
+        <a class="btn" href="#pb1">Part B.1</a>
+        <a class="btn" href="#pb2">Part B.2</a>
+
       </div>
     </div>
   </header>
@@ -28,7 +31,7 @@
 
     <!-- part 0 -->
     <section id="p0" class="section">
-      <h2>Part 0: Setup</h2>
+      <h2>Part A.0: Setup</h2>
       <p class="lede">
         In the set up portion, we created a Hugging Face access token to use the DeepFloyd diffusion model. Below are some results of different prompts with different values of num_inference_steps, using a random seed of 333. We can see from the images that a lower num_inference_steps generally is faster, but at the cost of reduced quality. With a low number of inference steps, the output does not follow the text prompt as well. For example, the car below is not really a good side view and the mountain/ski lift painting is not very high quality, but the tiger image follows the prompt fairly well and is higher quality with more inference steps.
       </p>
@@ -66,7 +69,7 @@
 
     <!-- part 1.1 -->
     <section id="p11" class="section">
-      <h2>Part 1.1: Implementing the Forward Process</h2>
+      <h2>Part A.1.1: Implementing the Forward Process</h2>
       <p class="lede">
         In this part, we implement the forward process. The process is displayed below, continuously adding more and more noise.
       </p>
@@ -83,7 +86,7 @@
 
     <!-- part 1.2 -->
     <section class="section">
-      <h2>Part 1.2: Classical Denoising</h2>
+      <h2>Part A.1.2: Classical Denoising</h2>
       <p class="lede">
         This part illustrates how classical techniques of removing noise are not very effective for this new type of noise. Below are the results of trying to apply gaussian blur filtering to the image at noise levels 250, 500, and 750.
       </p>
@@ -97,7 +100,7 @@
 
     <!-- part 1.3 -->
     <section class="section">
-      <h2>Part 1.3: One Step Denoising</h2>
+      <h2>Part A.1.3: One Step Denoising</h2>
       <p class="lede">
         Instead of denoising with classical methods, it is much better to denoise with the pretrained diffusion model. The results of using the DeepFloyd model for denoising the three noisy images in just one step are displayed below, as well as the original image for comparison. We can see that this is already much more effective than gaussian blur filtering.
       </p>
@@ -111,7 +114,7 @@
 
     <!-- part 1.4 -->
     <section class="section">
-      <h2>Part 1.4: Iterative Denoising</h2>
+      <h2>Part A.1.4: Iterative Denoising</h2>
       <p class="lede">
         In part 1.4, we can improve the results of denoising with the diffusion model by iteratively denoising instead of just one step. Instead of denoising from the signal to the noise, we linearly interpolate between the signal and the noise, and take smaller steps, repeatedly denoising iteratively until we arrive at the clean image. The first images below show the intermediate steps of denoising the campanile image. After more iterations, the image gradually becomes less noisy. Below that, the original image is shown as well as comparisons of results with iterative denoising, one step denoising, and the gaussian blur filtered denoising.
       </p>
@@ -132,7 +135,7 @@
 
     <!-- part 1.5 -->
     <section class="section">
-      <h2>Part 1.5: Diffusion Model Sampling</h2>
+      <h2>Part A.1.5: Diffusion Model Sampling</h2>
       <p class="lede">
         The diffusion model's iterative denoising can also be used to generate images that have never been seen before. Since the model is pretrained, denoising completely random noise will construct an image that follows the prompt given. In the samples below, the prompt is simply "a high quality image."
       </p>
@@ -146,7 +149,7 @@
 
     <!-- part 1.6 -->
     <section class="section">
-      <h2>Part 1.6: Classifier Free Guidance (CFG)</h2>
+      <h2>Part A.1.6: Classifier Free Guidance (CFG)</h2>
       <p class="lede">
         The images generated in the previous part are not great, and some look pretty weird and unrealistic. To improve the quality, we implement classifier free guidance in this part, which combines a conditional noise estimate (like above) with an unconditional estimate using a null prompt. This reduces diversity, but gives higher quality results. Below are 5 CFG samples.
       </p>
@@ -160,7 +163,7 @@
 
     <!-- part 1.7 -->
     <section class="section">
-      <h2>Part 1.7: Image to Image Translation</h2>
+      <h2>Part A.1.7: Image to Image Translation</h2>
       <p class="lede">In part 1.7, we can now use the CFG to make edits to existing images by adding noise to a real image and then running the CFG generation on that image. More edits are allowed by the model if we add more noise. Below are the results of running this algorithm on the campanile image, the golden gate bridge, and the eiffel tower. For each test image, different noise levels are used which can be thought of as controlling the amount of hallucination allowed by the model.</p>
 
       <figure class="card pan-x">
@@ -184,7 +187,7 @@
 
     <!-- part 1.7.1 -->
     <section class="section">
-      <h2>Part 1.7.1: Editing Hand Drawn and Web Images</h2>
+      <h2>Part A.1.7.1: Editing Hand Drawn and Web Images</h2>
       <p class="lede">
         This same process is applied below for illustrations and hand drawn images. The dog image was downloaded from the web, and the next two I drew. It is interesting to see what the model generates at different levels, like the lady in a full rainbow onesie.
       </p>
@@ -210,7 +213,7 @@
 
     <!-- part 1.7.2 -->
     <section class="section">
-      <h2>Part 1.7.2: Inpainting</h2>
+      <h2>Part A.1.7.2: Inpainting</h2>
       <p class="lede">
         This same procedure can be applied similar for inpainting, by having the model restricted to only being able to generate a certain area of an image. The inpainting algorithm was applied below to the campenile, golden gate bridge, and the eiffel tower, with different masks for each one.
       </p>
@@ -236,7 +239,7 @@
 
     <!-- part 1.7.3 -->
     <section class="section">
-      <h2>Part 1.7.3: Text Conditional Image to Image Translation</h2>
+      <h2>Part A.1.7.3: Text Conditional Image to Image Translation</h2>
       <p class="lede">
         The same editing algorithm from the first part of 1.7 can also be guided with a text prompt. Below are edits of the campanile to look like a "rocketship", the eiffel tower to look like a "steep mountain," and the golden gate bridge to look like a "medieval bridge."
       </p>
@@ -248,7 +251,7 @@
 
     <!-- part 1.8 -->
     <section class="section">
-      <h2>Part 1.8: Visual Anagrams</h2>
+      <h2>Part A.1.8: Visual Anagrams</h2>
       <p class="lede">
         In this part, we can create optical illusions, where the image looks two different images when flipped around. This is done by denoising the image at each time step with both the upright prompt and also on the flipped over image with the flipped prompt. Then the noise estimates are averaged for the actual diffusion step. Below are the outputs for two of these illusions.
       </p>
@@ -262,7 +265,7 @@
 
     <!-- part 1.9 -->
     <section class="section">
-      <h2>Part 1.9: Hybrid Images</h2>
+      <h2>Part A.1.9: Hybrid Images</h2>
       <p class="lede">
         In this part, a similar optical illusion is created, but instead one that looks different from close up or far away. This is done by similarly estimating the noise from two text prompts, but instead combining the low frequencies from one prompt and the high frequencies from the other. Below are the outputs for two of these illusions.
       </p>
@@ -274,6 +277,194 @@
     </section>
 
     <!-- part B here -->
+     <section id="pb1" class="section">
+      <h2>Part B.1: Training a Single Step Denoising UNet</h2>
+      <p class="lede">
+        In part B, we built and trained UNet models as opposed to just using the DeepFloyd diffusion model. For the first part, we started with implementing a simple UNet that consists of a few downsampling and upsampling blocks with skip connections.
+      </p>
+
+      <!-- part 1.2 -->
+      <h3>Part B.1.2: Using the UNet to Train a Denoiser</h3>
+      <p class="lede">
+        The visualization below displays the noising process that is necessary for training. Just like in the first parts of part A, the image gets noiser as sigma increases.
+      </p>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/partb1/sigmas_noise.png">
+        </div>
+      </figure>
+
+      <!-- part 1.2.1 -->
+      <h3>Part B.1.2.1: Training</h3>
+      <p class="lede">
+        Trained on the MNIST dataset noised with sigma at 0.5, the model minimizes the L2 loss over 5 epochs. The training loss plot for this model is displayed below, as well as results from the model after the first epoch and the fifth epoch.
+      </p>
+
+      <div class="figure trio">
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/partb1/loss_121.png">
+          </div>
+        </figure>
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/partb1/epoch1_121.png">
+          </div>
+        </figure>
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/partb1/epoch5_121.png">
+          </div>
+        </figure>
+      </div>
+
+      <!-- part 1.2.2 -->
+      <h3>Part B.1.2.2: Out of Distribution Testing</h3>
+      <p class="lede">
+        Since the model was only trained on MNIST digits noised with sigma as 0.5, the denoiser is able to perform well on any noise level lower than 0.5, but struggles with more noise than it was trained on. Results are displayed below with varying sigma values to see how the model performs.
+      </p>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/partb1/ood_sigmas.png">
+        </div>
+      </figure>
+
+      <!-- part 1.2.3 -->
+      <h3>Part B.1.2.3: Denoising Pure Noise</h3>
+      <p class="lede">
+        For a truly generative task, we ideally want the model to be able to denoise pure noise, not a noised up version of an MNIST digit. Training the same simple UNet model but with pure noise as input gives the loss plot and epoch results below. These results are not great. The model seems to just give an output that minimizes loss for all possible digits, since it is not conditioned on any particular digit. In the outputs below, the generation has patterns and pieces of all the different digits, instead of just one.
+      </p>
+
+      <div class="figure trio">
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/partb1/loss_123.png">
+          </div>
+        </figure>
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/partb1/epoch1_123.png">
+          </div>
+        </figure>
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/partb1/epoch5_123.png">
+          </div>
+        </figure>
+      </div>
+    </section>
+
+    <!-- part 2 -->
+    <section id="pb2" class="section">
+      <h2>Part B.2: Training a Flow Matching Model</h2>
+      <p class="lede">
+        To improve the results from the simple UNet, in this part we implement flow matching which will start with the pure noise that we want and generate a realistic image. The model instead learns the flow, or the velocity field, to guide the noise input image to the realistic image. To achieve this, the model is time conditioned so it is aware of what timestep it is currently at.
+      </p>
+
+      <!-- part 2.2 -->
+      <h3>Part B.2.2: Training the Time Conditioned UNet</h3>
+      <p class="lede">
+        To train the time conditioned model, we chose a random image from the training set and a random t value, add noise to the image to get to the image at timestep t, and train the model to predict the flow at x_t. This is repeated until the model converges. The loss plot for this model is displayed below.
+      </p>
+
+      <figure class="card">
+        <div class="media-frame">
+          <img src="media/partb2/loss_22.png">
+        </div>
+      </figure>
+
+      <!-- part 2.3 -->
+      <h3>Part B.2.3: Sampling from the Time Conditioned UNet</h3>
+      <p class="lede">
+        Below are intermediate sampling results for the time conditioned model. Results are not perfect after the 10 epochs, but we can start to make out individual digits.
+      </p>
+
+      <div class="figure trio">
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/partb2/epoch1_23.png">
+          </div>
+        </figure>
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/partb2/epoch5_23.png">
+          </div>
+        </figure>
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/partb2/epoch10_23.png">
+          </div>
+        </figure>
+      </div>
+
+      <!-- part 2.5 -->
+      <h3>Part B.2.5: Training the Class Conditioned UNet</h3>
+      <p class="lede">
+        To further improve results, we add class conditioning to the model by giving it a one hot vector representing what digit 0-9 the input is. This one hot vector is also dropped from the input 10% of the time, allowing it to work still without being conditioned on the class. Below is the training loss plot for the class conditioned model.
+      </p>
+
+      <figure class="card">
+        <div class="media-frame">
+          <img src="media/partb2/loss_25.png">
+        </div>
+      </figure>
+
+      <!-- part 2.6 -->
+      <h3>Part B.2.6: Sampling from the class conditioned UNet</h3>
+      <p class="lede">
+        Below are sampled results from the class conditioned UNet from epochs 1, 5, and 10. Results are much better than in the previous UNet implementations.
+      </p>
+
+      <div class="figure trio">
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/partb2/epoch1_26.png">
+          </div>
+        </figure>
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/partb2/epoch5_26.png">
+          </div>
+        </figure>
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/partb2/epoch10_26.png">
+          </div>
+        </figure>
+      </div>
+
+      <!-- no lr scheduler -->
+      <h3>Removing the Learning Rate Scheduler</h3>
+      <p class="lede">
+        The results for the parts above used a learning rate scheduler during training to allow for better convergence. However, this is not actually necessary for performance. The loss plot and intermediate results below were generated without a learning rate scheduler during training. In order to compensate for the loss of the scheduler, using a slightly smaller learning rate than before (0.005 instead of 0.01) is able to maintain performance, despite possibly taking a bit longer to converge.
+      </p>
+
+      <figure class="card">
+        <div class="media-frame">
+          <img src="media/partb2/nosched_loss.png">
+        </div>
+      </figure>
+
+      <div class="figure trio">
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/partb2/nosched_epoch1.png">
+          </div>
+        </figure>
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/partb2/nosched_epoch5.png">
+          </div>
+        </figure>
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/partb2/nosched_epoch10.png">
+          </div>
+        </figure>
+      </div>
+    </section>
 
   </main>
 </body>
