@@ -2,15 +2,279 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Project 5</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Project 5 — Fun With Diffusion Models</title>
+  <link rel="stylesheet" href="project.css" />
+  <meta name="description" content="CS180 Project 5" />
 </head>
 <body>
-  <h1>Project 5 - Fun With Diffusion</h1>
-  <p>Not yet implemented</p>
-  <a href="../../index.html">← Back to Home</a>
+  <header class="site-header container">
+    <nav class="breadcrumb">
+      <a href="../../index.html">← Back to Portfolio</a>
+    </nav>
 
-  <script src="script.js"></script>
+    <h1>Project 5: Fun With Diffusion Models</h1>
+    <div class="rule"></div>
+
+    <div class="quick-links" role="navigation" aria-label="Jump to section">
+      <div class="link-row">
+        <a class="btn" href="#p0">Part A.0</a>
+        <a class="btn" href="#p11">Part A.1</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container article">
+
+    <!-- part 0 -->
+    <section id="p0" class="section">
+      <h2>Part 0: Setup</h2>
+      <p class="lede">
+        In the set up portion, we created a Hugging Face access token to use the DeepFloyd diffusion model. Below are some results of different prompts with different values of num_inference_steps, using a random seed of 333. We can see from the images that a lower num_inference_steps generally is faster, but at the cost of reduced quality. With a low number of inference steps, the output does not follow the text prompt as well. For example, the car below is not really a good side view and the mountain/ski lift painting is not very high quality, but the tiger image follows the prompt fairly well and is higher quality with more inference steps.
+      </p>
+
+      <div class="figure trio">
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/part0/rain_car.png">
+          </div>
+          <figcaption>
+            "an image of the side view of a car driving through the rain"<br/>
+            <strong>num_inference_steps = 20</strong>
+          </figcaption>
+        </figure>
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/part0/ski_lift.png">
+          </div>
+          <figcaption>
+            "a painting of alpine mountains and ski lifts in a snow storm"<br/>
+            <strong>num_inference_steps = 50</strong>
+          </figcaption>
+        </figure>
+        <figure class="card">
+          <div class="media-frame">
+            <img src="media/part0/tiger.png">
+          </div>
+          <figcaption>
+            "the face of a tiger hidden behind leaves and vines and shadows"<br/>
+            <strong>num_inference_steps = 250</strong>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- part 1.1 -->
+    <section id="p11" class="section">
+      <h2>Part 1.1: Implementing the Forward Process</h2>
+      <p class="lede">
+        In this part, we implement the forward process. The process is displayed below, continuously adding more and more noise.
+      </p>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/part1/campenile_forward.png">
+        </div>
+        <figcaption>
+          <strong>Noise levels 250, 500, & 750 (left to right)</strong>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- part 1.2 -->
+    <section class="section">
+      <h2>Part 1.2: Classical Denoising</h2>
+      <p class="lede">
+        This part illustrates how classical techniques of removing noise are not very effective for this new type of noise. Below are the results of trying to apply gaussian blur filtering to the image at noise levels 250, 500, and 750.
+      </p>
+
+      <figure class="card mega">
+        <div class="media-frame">
+          <img src="media/part1/classical_denoise.png">
+        </div>
+      </figure>
+    </section>
+
+    <!-- part 1.3 -->
+    <section class="section">
+      <h2>Part 1.3: One Step Denoising</h2>
+      <p class="lede">
+        Instead of denoising with classical methods, it is much better to denoise with the pretrained diffusion model. The results of using the DeepFloyd model for denoising the three noisy images in just one step are displayed below, as well as the original image for comparison. We can see that this is already much more effective than gaussian blur filtering.
+      </p>
+
+      <figure class="card mega">
+        <div class="media-frame">
+          <img src="media/part1/onestep_denoise.png">
+        </div>
+      </figure>
+    </section>
+
+    <!-- part 1.4 -->
+    <section class="section">
+      <h2>Part 1.4: Iterative Denoising</h2>
+      <p class="lede">
+        In part 1.4, we can improve the results of denoising with the diffusion model by iteratively denoising instead of just one step. Instead of denoising from the signal to the noise, we linearly interpolate between the signal and the noise, and take smaller steps, repeatedly denoising iteratively until we arrive at the clean image. The first images below show the intermediate steps of denoising the campanile image. After more iterations, the image gradually becomes less noisy. Below that, the original image is shown as well as comparisons of results with iterative denoising, one step denoising, and the gaussian blur filtered denoising.
+      </p>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/part1/every5.png">
+        </div>
+      </figure>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/part1/results_iter.png">
+        </div>
+      </figure>
+
+    </section>
+
+    <!-- part 1.5 -->
+    <section class="section">
+      <h2>Part 1.5: Diffusion Model Sampling</h2>
+      <p class="lede">
+        The diffusion model's iterative denoising can also be used to generate images that have never been seen before. Since the model is pretrained, denoising completely random noise will construct an image that follows the prompt given. In the samples below, the prompt is simply "a high quality image."
+      </p>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/part1/samples.png">
+        </div>
+      </figure>
+    </section>
+
+    <!-- part 1.6 -->
+    <section class="section">
+      <h2>Part 1.6: Classifier Free Guidance (CFG)</h2>
+      <p class="lede">
+        The images generated in the previous part are not great, and some look pretty weird and unrealistic. To improve the quality, we implement classifier free guidance in this part, which combines a conditional noise estimate (like above) with an unconditional estimate using a null prompt. This reduces diversity, but gives higher quality results. Below are 5 CFG samples.
+      </p>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/part1/cfg_samples.png">
+        </div>
+      </figure>
+    </section>
+
+    <!-- part 1.7 -->
+    <section class="section">
+      <h2>Part 1.7: Image to Image Translation</h2>
+      <p class="lede">In part 1.7, we can now use the CFG to make edits to existing images by adding noise to a real image and then running the CFG generation on that image. More edits are allowed by the model if we add more noise. Below are the results of running this algorithm on the campanile image, the golden gate bridge, and the eiffel tower. For each test image, different noise levels are used which can be thought of as controlling the amount of hallucination allowed by the model.</p>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/part1/campanile_edits.png">
+        </div>
+      </figure>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/part1/golden_gate_edits.png">
+        </div>
+      </figure>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/part1/eiffel_edits.png">
+        </div>
+      </figure>
+    </section>
+
+    <!-- part 1.7.1 -->
+    <section class="section">
+      <h2>Part 1.7.1: Editing Hand Drawn and Web Images</h2>
+      <p class="lede">
+        This same process is applied below for illustrations and hand drawn images. The dog image was downloaded from the web, and the next two I drew. It is interesting to see what the model generates at different levels, like the lady in a full rainbow onesie.
+      </p>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/part1/dog_edits.png">
+        </div>
+      </figure>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/part1/mountain_edits.png">
+        </div>
+      </figure>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/part1/rainbow_edits.png">
+        </div>
+      </figure>
+    </section>
+
+    <!-- part 1.7.2 -->
+    <section class="section">
+      <h2>Part 1.7.2: Inpainting</h2>
+      <p class="lede">
+        This same procedure can be applied similar for inpainting, by having the model restricted to only being able to generate a certain area of an image. The inpainting algorithm was applied below to the campenile, golden gate bridge, and the eiffel tower, with different masks for each one.
+      </p>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/part1/inpaint_campanile.png">
+        </div>
+      </figure>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/part1/inpaint_eiffel.png">
+        </div>
+      </figure>
+
+      <figure class="card pan-x">
+        <div class="media-frame no-pad">
+          <img class="wide" src="media/part1/inpaint_golden_gate.png">
+        </div>
+      </figure>
+    </section>
+
+    <!-- part 1.7.3 -->
+    <section class="section">
+      <h2>Part 1.7.3: Text Conditional Image to Image Translation</h2>
+      <p class="lede">
+        The same editing algorithm from the first part of 1.7 can also be guided with a text prompt. Below are edits of the campanile to look like a "rocketship", the eiffel tower to look like a "steep mountain," and the golden gate bridge to look like a "medieval bridge."
+      </p>
+
+      <figure class="card pan-x"><div class="media-frame no-pad"><img class="wide" src="media/part1/rocket_campanile.png" alt=""></div></figure>
+      <figure class="card pan-x"><div class="media-frame no-pad"><img class="wide" src="media/part1/eiffel_mountain.png" alt=""></div></figure>
+      <figure class="card pan-x"><div class="media-frame no-pad"><img class="wide" src="media/part1/golden_medieval.png" alt=""></div></figure>
+    </section>
+
+    <!-- part 1.8 -->
+    <section class="section">
+      <h2>Part 1.8: Visual Anagrams</h2>
+      <p class="lede">
+        In this part, we can create optical illusions, where the image looks two different images when flipped around. This is done by denoising the image at each time step with both the upright prompt and also on the flipped over image with the flipped prompt. Then the noise estimates are averaged for the actual diffusion step. Below are the outputs for two of these illusions.
+      </p>
+
+      <div class="figure duo tight">
+        <figure class="card">
+          <div class="media-frame"><img src="media/part1/ski.png"></div></figure>
+        <figure class="card"><div class="media-frame"><img src="media/part1/skyline_keyboard.png"></div></figure>
+      </div>
+    </section>
+
+    <!-- part 1.9 -->
+    <section class="section">
+      <h2>Part 1.9: Hybrid Images</h2>
+      <p class="lede">
+        In this part, a similar optical illusion is created, but instead one that looks different from close up or far away. This is done by similarly estimating the noise from two text prompts, but instead combining the low frequencies from one prompt and the high frequencies from the other. Below are the outputs for two of these illusions.
+      </p>
+
+      <div class="figure duo tight">
+        <figure class="card"><div class="media-frame"><img src="media/part1/panda_plant.png"></div></figure>
+        <figure class="card"><div class="media-frame"><img src="media/part1/bird_island.png"></div></figure>
+      </div>
+    </section>
+
+    <!-- part B here -->
+
+  </main>
 </body>
 </html>
